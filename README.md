@@ -1,2 +1,5 @@
-# gca-school-day-jf268134
-Jeffrey GCA school day dashboard — family HTML page
+# Jeffrey · School Day
+
+Family dashboard for Georgia Cyber Academy (Jeffrey).
+
+Live page (after Pages is on): https://whyclicktwice.github.io/gca-school-day-jf268134/

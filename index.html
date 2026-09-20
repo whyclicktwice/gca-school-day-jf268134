@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jeffrey · School Day</title>
+<style>
+  :root {
+    --bg: #0e0e10;
+    --card: #1c1c1e;
+    --text: #f5f5f7;
+    --muted: #98989f;
+    --line: #2c2c2e;
+    --accent: #0a84ff;
+    --accent-soft: #0a2a4a;
+    --good: #30d158;
+    --good-soft: #0f2a18;
+    --warn: #ffd60a;
+    --warn-soft: #3a3008;
+    --danger: #ff453a;
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.45);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); line-height: 1.45; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 20px 72px; }
+  header { margin-bottom: 22px; }
+  header h1 { margin: 0; font-size: 1.65rem; font-weight: 700; letter-spacing: -.03em; }
+  header .sub { color: var(--muted); margin-top: 4px; font-size: .95rem; }
+  .hero {
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    padding: 22px; box-shadow: var(--shadow); margin-bottom: 18px;
+  }
+  .hero-kicker {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-soft); padding: 5px 10px; border-radius: 999px;
+  }
+  .hero h2 { margin: 12px 0 6px; font-size: 1.45rem; letter-spacing: -.02em; }
+  .hero .why { color: var(--muted); margin: 0 0 16px; }
+  .primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--accent); color: #fff; text-decoration: none; font-weight: 600;
+    padding: 12px 18px; border-radius: 12px; font-size: 1rem;
+  }
+  .primary:hover { filter: brightness(1.05); }
+  .primary.secondary { background: transparent; color: var(--accent); border: 1px solid var(--line); }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .progress-row { display: flex; align-items: center; gap: 12px; }
+  .bar {
+    flex: 1; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden;
+  }
+  .bar > span { display: block; height: 100%; background: var(--accent); width: 0%; transition: width .25s ease; }
+  .progress-label { font-size: .85rem; color: var(--muted); min-width: 4.5rem; text-align: right; }
+
+  .section { margin-top: 22px; }
+  .section h3 {
+    margin: 0 0 10px; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); font-weight: 700;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .list { list-style: none; margin: 0; padding: 0; }
+  .item {
+    display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: start;
+    padding: 14px 16px; border-bottom: 1px solid var(--line);
+  }
+  .item:last-child { border-bottom: 0; }
+  .item.done .title { color: var(--muted); text-decoration: line-through; }
+  .item input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); }
+  .title { font-weight: 600; }
+  .title a { color: inherit; text-decoration: none; }
+  .title a:hover { color: var(--accent); }
+  .detail { color: var(--muted); font-size: .88rem; margin-top: 2px; }
+  .go {
+    font-size: .85rem; font-weight: 600; color: var(--accent); text-decoration: none;
+    padding: 6px 10px; border-radius: 8px; white-space: nowrap;
+  }
+  .go:hover { background: var(--accent-soft); }
+  .tag {
+    display: inline-block; font-size: .7rem; font-weight: 600; padding: 2px 7px;
+    border-radius: 6px; margin-right: 4px; margin-top: 6px;
+  }
+  .tag.due { background: var(--warn-soft); color: var(--warn); }
+  .tag.pts { background: var(--accent-soft); color: var(--accent); }
+  .tag.now { background: var(--good-soft); color: var(--good); }
+
+  .grades {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;
+  }
+  .grade {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px; text-decoration: none; color: inherit; box-shadow: var(--shadow);
+  }
+  .grade:hover { border-color: #3a4a5c; }
+  .grade .name { font-size: .78rem; color: var(--muted); font-weight: 600; }
+  .grade .pct { font-size: 1.5rem; font-weight: 700; margin-top: 4px; letter-spacing: -.02em; color: var(--good); }
+  .grade .teacher { font-size: .75rem; color: var(--muted); margin-top: 2px; }
+  .grade.missing .pct { color: var(--muted); font-size: 1.1rem; }
+
+  .days { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .day-chip {
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 999px; padding: 7px 12px; font-size: .85rem; font-weight: 600; cursor: pointer;
+  }
+  .day-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .note {
+    background: var(--warn-soft); color: #f0d56a; border-radius: 12px; padding: 12px 14px;
+    font-size: .9rem; margin-bottom: 18px; border: 1px solid #5a4a12;
+  }
+  footer {
+    margin-top: 28px; color: var(--muted); font-size: .82rem;
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center;
+  }
+  button.linkish {
+    background: transparent; border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px 12px; cursor: pointer; color: var(--muted); font-size: .85rem;
+  }
+  .parent a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Jeffrey · School Day</h1>
+    <div class="sub">Georgia Cyber Academy · Week of Sep 21–25</div>
+  </header>
+
+  <div class="note">Chip away Mon–Thu (including 0-pt module work). Waiting until Friday makes Friday hard.</div>
+
+  <section class="hero" id="hero">
+    <div class="hero-kicker" id="hero-kicker">Do this next</div>
+    <h2 id="hero-title">Loading…</h2>
+    <p class="why" id="hero-why"></p>
+    <div class="hero-actions" id="hero-actions"></div>
+    <div class="progress-row">
+      <div class="bar"><span id="progress-fill"></span></div>
+      <div class="progress-label" id="progress-label">0/0</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>Grades</h3>
+    <div class="grades" id="grades"></div>
+  </section>
+
+  <section class="section">
+    <h3>Today’s checklist</h3>
+    <div class="card"><ul class="list" id="today-list"></ul></div>
+  </section>
+
+  <section class="section">
+    <h3>Due soon</h3>
+    <div class="card"><ul class="list" id="due-list"></ul></div>
+  </section>
+
+  <section class="section">
+    <h3>Rest of the week</h3>
+    <div class="days" id="day-chips"></div>
+    <div class="card"><ul class="list" id="week-list"></ul></div>
+  </section>
+
+  <section class="section parent">
+    <h3>Parent</h3>
+    <div class="card">
+      <div class="item" style="grid-template-columns:1fr">
+        <div>
+          <div class="title">IEP amendment — on calendar</div>
+          <div class="detail">Thu Oct 15 · 2:45–3:45pm ET · <a href="https://georgiacyber.zoom.us/j/9491953819" target="_blank" rel="noopener">Zoom</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Checks save on this device · Canvas links are live · refreshed Sep 20</div>
+    <div>
+      <button class="linkish" type="button" id="reset">Clear checks</button>
+      <a class="go" href="https://georgiacyber.instructure.com/" target="_blank" rel="noopener">Canvas</a>
+    </div>
+  </footer>
+</div>
+<script>
+const KEY = "gca-jeffrey-dashboard-v4";
+const COURSES = {
+  algebra:"https://georgiacyber.instructure.com/courses/91459",
+  ela:"https://georgiacyber.instructure.com/courses/90405",
+  science:"https://georgiacyber.instructure.com/courses/90918",
+  ss:"https://georgiacyber.instructure.com/courses/90612",
+  pe:"https://georgiacyber.instructure.com/courses/89891",
+  algebraWeek:"https://georgiacyber.instructure.com/courses/91459/modules/items/7450153",
+  elaWeek:"https://georgiacyber.instructure.com/courses/90405/modules/items/7569402",
+  scienceWeek:"https://georgiacyber.instructure.com/courses/90918/modules/items/7686250",
+  ssWeek:"https://georgiacyber.instructure.com/courses/90612/modules/items/7681178",
+};
+const GRADES = [
+  {name:"Algebra", pct:98.46, teacher:"Osborne", url:COURSES.algebra},
+  {name:"ELA 6", pct:98.75, teacher:"Zeiler", url:COURSES.ela},
+  {name:"Science 7", pct:100, teacher:"Norris", url:COURSES.science},
+  {name:"SS 6", pct:100, teacher:"Burnham", url:COURSES.ss},
+  {name:"PE 6", pct:null, teacher:"Siegel", url:COURSES.pe},
+];
+const DUE = [
+  {id:"due-ss-fair", title:"SS Fair Final", when:"Mon Sep 21 · 11:59pm", pts:"100 pts", url:"https://georgiacyber.instructure.com/courses/90612/assignments/2168962", dueDate:"2026-09-21"},
+  {id:"due-alg-test", title:"Algebra Unit 3 Test", when:"Thu Sep 24 · 11:59pm", pts:"100 pts", url:"https://georgiacyber.instructure.com/courses/91459/assignments/2265249", dueDate:"2026-09-24"},
+  {id:"due-ia1-sci", title:"IA1 Science", when:"Tue Sep 29 · 8am", url:"https://georgiacyber.instructure.com/calendar?event_id=3990381&include_contexts=course_90888", dueDate:"2026-09-29"},
+  {id:"due-ia1-ss", title:"IA1 Social Studies", when:"Wed Sep 30 · 8am", url:"https://georgiacyber.instructure.com/calendar?event_id=3990382&include_contexts=course_90888", dueDate:"2026-09-30"},
+  {id:"due-alg-sg", title:"Algebra Unit 3 Study Guide", when:"Wed Sep 30 · 11:59pm", pts:"100 pts", url:"https://georgiacyber.instructure.com/courses/91459/assignments/2263610", dueDate:"2026-09-30"},
+  {id:"due-ia1-ela", title:"IA1 / Beacon ELA", when:"Thu Oct 1 · 8am", url:"https://georgiacyber.instructure.com/calendar?event_id=3990383&include_contexts=course_90888", dueDate:"2026-10-01"},
+  {id:"due-ela-u2", title:"ELA Unit 2 Test", when:"Thu Oct 1 · 11:59pm", pts:"100 pts", url:"https://georgiacyber.instructure.com/courses/90405/assignments/2238136", dueDate:"2026-10-01"},
+];
+const WEEK = {
+  "2026-09-21":{label:"Mon 21", full:"Monday · Sep 21", focus:"SS Fair Final is due tonight. Open it first.",
+    next:{title:"Submit SS Fair Final", detail:"Due tonight · 100 pts", url:"https://georgiacyber.instructure.com/courses/90612/assignments/2168962"},
+    items:[
+      {id:"t-ss-fair", title:"Submit SS Fair Final", detail:"Due tonight 11:59pm", url:"https://georgiacyber.instructure.com/courses/90612/assignments/2168962", due:true},
+      {id:"t-ss-mod", title:"SS Monday modules", detail:"Cold War / Progress Learning", url:COURSES.ssWeek},
+      {id:"t-alg-mod", title:"Algebra — start Unit 3 Lesson 2", detail:"Don't wait for Thursday", url:COURSES.algebraWeek},
+      {id:"t-ela-mod", title:"ELA Lesson 1 — Poetic Structure", url:COURSES.elaWeek},
+      {id:"t-sci-mod", title:"Science Monday IA review", detail:"0-pt items still count", url:COURSES.scienceWeek},
+    ]},
+  "2026-09-22":{label:"Tue 22", full:"Tuesday · Sep 22", focus:"SS unit-test focus + keep modules moving.",
+    next:{title:"SS Tuesday modules / unit test", url:COURSES.ssWeek},
+    items:[
+      {id:"t-ss-tue", title:"SS Tuesday modules / unit test", url:COURSES.ssWeek, due:true},
+      {id:"t-alg-tue", title:"Algebra — continue Unit 3", url:COURSES.algebraWeek},
+      {id:"t-ela-tue", title:"ELA Lesson 2 — Rhyme Scheme", url:COURSES.elaWeek},
+      {id:"t-sci-tue", title:"Science Tuesday IA review", url:COURSES.scienceWeek},
+    ]},
+  "2026-09-23":{label:"Wed 23", full:"Wednesday · Sep 23", focus:"IA review + Algebra study guide before tomorrow's test.",
+    next:{title:"Algebra Unit 3 Study Guide", detail:"Work it before Thursday's test", url:"https://georgiacyber.instructure.com/courses/91459/assignments/2263610"},
+    items:[
+      {id:"t-alg-sg", title:"Algebra Unit 3 Study Guide", url:"https://georgiacyber.instructure.com/courses/91459/assignments/2263610", due:true},
+      {id:"t-ss-wed", title:"SS Wednesday IA review", url:COURSES.ssWeek},
+      {id:"t-ela-wed", title:"ELA Lesson 3 — Review Plot", url:COURSES.elaWeek},
+      {id:"t-sci-wed", title:"Science Wednesday IA review", url:COURSES.scienceWeek},
+    ]},
+  "2026-09-24":{label:"Thu 24", full:"Thursday · Sep 24", focus:"Algebra Unit 3 Test is due tonight.",
+    next:{title:"Algebra Unit 3 Test", detail:"Due tonight · 100 pts", url:"https://georgiacyber.instructure.com/courses/91459/assignments/2265249"},
+    items:[
+      {id:"t-alg-test", title:"Algebra Unit 3 Test", detail:"Due tonight 11:59pm", url:"https://georgiacyber.instructure.com/courses/91459/assignments/2265249", due:true},
+      {id:"t-ss-thu", title:"SS Thursday IA review", url:COURSES.ssWeek},
+      {id:"t-ela-thu", title:"ELA Lesson 4 — Theme", url:COURSES.elaWeek},
+      {id:"t-sci-thu", title:"Science Thursday IA review", url:COURSES.scienceWeek},
+    ]},
+  "2026-09-25":{label:"Fri 25", full:"Friday · Sep 25", focus:"Light finish day — only leftovers.",
+    next:{title:"SS Friday IA review", url:COURSES.ssWeek},
+    items:[
+      {id:"t-ss-fri", title:"SS Friday IA review", url:COURSES.ssWeek},
+      {id:"t-ela-fri", title:"ELA Lesson 5 — Tone and Mood", detail:"0 pts — still do it", url:COURSES.elaWeek},
+      {id:"t-catch", title:"Catch leftovers from Mon–Thu", url:COURSES.ssWeek},
+    ]},
+};
+
+function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||"{}");}catch{return {};}}
+function save(s){localStorage.setItem(KEY,JSON.stringify(s));}
+function focusKey(now=new Date()){
+  const d=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const day=d.getDay();
+  if(day===0) d.setDate(d.getDate()+1);
+  if(day===6) d.setDate(d.getDate()+2);
+  let k=ymd(d);
+  if(!WEEK[k]) k="2026-09-21";
+  return k;
+}
+let activeDay = focusKey();
+
+function renderItem(item, tags){
+  const st=load(); const done=!!st[item.id];
+  const li=document.createElement("li");
+  li.className="item"+(done?" done":"");
+  li.innerHTML=`<input type="checkbox" ${done?"checked":""} aria-label="Done" />
+    <div><div class="title">${item.url?`<a href="${item.url}" target="_blank" rel="noopener"></a>`:`<span></span>`}</div>
+    <div class="detail"></div><div class="tags"></div></div>
+    ${item.url?`<a class="go" href="${item.url}" target="_blank" rel="noopener">Open</a>`:`<span></span>`}`;
+  li.querySelector(".title").firstElementChild.textContent=item.title;
+  li.querySelector(".detail").textContent=item.detail||item.when||"";
+  const tagBox=li.querySelector(".tags");
+  (tags||[]).forEach(t=>{const s=document.createElement("span"); s.className="tag "+t.cls; s.textContent=t.text; tagBox.appendChild(s);});
+  li.querySelector("input").addEventListener("change",e=>{
+    const s=load(); if(e.target.checked)s[item.id]=true; else delete s[item.id]; save(s);
+    li.classList.toggle("done",e.target.checked); updateProgress();
+  });
+  return li;
+}
+
+function updateProgress(){
+  const plan=WEEK[activeDay]; if(!plan) return;
+  const st=load();
+  const total=plan.items.length;
+  const done=plan.items.filter(i=>st[i.id]).length;
+  document.getElementById("progress-fill").style.width=(total? (done/total*100):0)+"%";
+  document.getElementById("progress-label").textContent=done+"/"+total;
+}
+
+function renderHero(){
+  const plan=WEEK[activeDay];
+  const weekend = (new Date().getDay()===0 || new Date().getDay()===6) && activeDay===focusKey();
+  document.getElementById("hero-kicker").textContent = weekend ? "Start here Monday" : "Do this next";
+  document.getElementById("hero-title").textContent = plan.next.title;
+  document.getElementById("hero-why").textContent = plan.focus;
+  const actions=document.getElementById("hero-actions");
+  actions.innerHTML="";
+  const a=document.createElement("a"); a.className="primary"; a.href=plan.next.url; a.target="_blank"; a.rel="noopener"; a.textContent="Open in Canvas";
+  actions.appendChild(a);
+  const b=document.createElement("a"); b.className="primary secondary"; b.href="https://georgiacyber.instructure.com/"; b.target="_blank"; b.rel="noopener"; b.textContent="Dashboard";
+  actions.appendChild(b);
+  updateProgress();
+}
+
+function renderToday(){
+  const ul=document.getElementById("today-list"); ul.innerHTML="";
+  WEEK[activeDay].items.forEach(item=>{
+    const tags=[]; if(item.due) tags.push({cls:"due", text:"Priority"});
+    ul.appendChild(renderItem(item, tags));
+  });
+}
+
+function renderDue(){
+  const ul=document.getElementById("due-list"); ul.innerHTML="";
+  DUE.forEach(item=>ul.appendChild(renderItem(item,[
+    {cls:"due", text:item.when},
+    ...(item.pts?[{cls:"pts", text:item.pts}]:[])
+  ])));
+}
+
+function renderGrades(){
+  const root=document.getElementById("grades"); root.innerHTML="";
+  GRADES.forEach(g=>{
+    const a=document.createElement("a"); a.className="grade"+(g.pct==null?" missing":""); a.href=g.url; a.target="_blank"; a.rel="noopener";
+    a.innerHTML=`<div class="name"></div><div class="pct"></div><div class="teacher"></div>`;
+    a.querySelector(".name").textContent=g.name;
+    a.querySelector(".pct").textContent=g.pct==null?"—":(Number.isInteger(g.pct)?g.pct+"%":g.pct.toFixed(2)+"%");
+    a.querySelector(".teacher").textContent=g.teacher;
+    root.appendChild(a);
+  });
+}
+
+function renderChips(){
+  const root=document.getElementById("day-chips"); root.innerHTML="";
+  Object.entries(WEEK).forEach(([key,day])=>{
+    const btn=document.createElement("button"); btn.type="button"; btn.className="day-chip"+(key===activeDay?" active":"");
+    btn.textContent=day.label;
+    btn.addEventListener("click",()=>{ activeDay=key; renderAll(); });
+    root.appendChild(btn);
+  });
+}
+
+function renderWeekPanel(){
+  const ul=document.getElementById("week-list"); ul.innerHTML="";
+  const plan=WEEK[activeDay];
+  const intro=document.createElement("li");
+  intro.className="item"; intro.style.gridTemplateColumns="1fr";
+  intro.innerHTML=`<div><div class="title">${plan.full}</div><div class="detail">${plan.focus}</div></div>`;
+  ul.appendChild(intro);
+  plan.items.forEach(item=>ul.appendChild(renderItem(item, item.due?[{cls:"due",text:"Priority"}]:[])));
+}
+
+function renderAll(){ renderHero(); renderToday(); renderDue(); renderGrades(); renderChips(); renderWeekPanel(); updateProgress(); }
+document.getElementById("reset").addEventListener("click",()=>{ if(confirm("Clear checked items on this device?")){ localStorage.removeItem(KEY); renderAll(); }});
+renderAll();
+</script>
+</body>
+</html>
